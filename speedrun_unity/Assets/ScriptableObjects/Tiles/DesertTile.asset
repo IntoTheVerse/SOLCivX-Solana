@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9716975af8559de46944c2a720714a2e, type: 3}
+  m_Name: DesertTile
+  m_EditorClassIdentifier: 
+  TileName: Desert
+  OuterSize: 2
+  InnerSize: 0
+  Height: 0.7
+  Material: {fileID: 2100000, guid: 23a65470c093458478e1c28945d6b7e2, type: 2}
+  OutOfViewMaterial: {fileID: 2100000, guid: 2ed7318ff9332e84d801a747b2346891, type: 2}
+  Walkable: 1
+  costOfMovementInTile: 2
+  Weight: 0.25
+  minimunObjectsSpawnOnTile: 1
+  maximumObjectsSpawnOnTile: 3
+  objsOnTile:
+  - obj: {fileID: 6381678898708592747, guid: 5893a35b36dbf46468a7f95cb9eb0af2, type: 3}
+    weight: 0.4
+  - obj: {fileID: 3839903051228538980, guid: ca36ce470381dd64c8814d7313547a2d, type: 3}
+    weight: 0.6
+  resources:
+  - resource: {fileID: 11400000, guid: 2198bfd17a276214996d47acf9e4035a, type: 2}
+    lowestPossibleSpawnAmount: 5
+    highestPossibleSpawnAmount: 10
+    probabilityOfSpawning: 0.04
+  hasResources: 1

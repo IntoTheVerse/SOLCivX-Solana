@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f42de960f5d0964eab1ecf02af4d9af, type: 3}
+  m_Name: House Lv 3
+  m_EditorClassIdentifier: 
+  RTItemName: House Lv 3
+  RTItemDescription: Gives player 3 energy every 3 mins. Consumes 3 energy every
+    5 mins
+  RTItemSprite: {fileID: 21300000, guid: 7c5e14994a29bf7968d16fc676c7d0b9, type: 3}
+  PreResearchedItemsRequired:
+  - {fileID: 11400000, guid: c1a537f0c411133c29c2f42c755ae9c0, type: 2}
+  TurnsRequiredToResearch: 8
+  OtherResourcesRequired:
+  - Resource: {fileID: 11400000, guid: a17b97a42e1a7d549a44d71d7f121161, type: 2}
+    ResourceAmount: 10
+  - Resource: {fileID: 11400000, guid: 2198bfd17a276214996d47acf9e4035a, type: 2}
+    ResourceAmount: 4
+  - Resource: {fileID: 11400000, guid: 1e93513ba9ff71c339996918c53e6e32, type: 2}
+    ResourceAmount: 5
