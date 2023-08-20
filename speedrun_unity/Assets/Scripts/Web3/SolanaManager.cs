@@ -11,6 +11,8 @@ using Frictionless;
 using SpeedrunAnchor;
 using SolPlay.Scripts.Services;
 using SpeedrunAnchor.Accounts;
+using SpeedrunAnchor.Program;
+using Solana.Unity.Rpc.Core.Http;
 
 public class SolanaManager : MonoBehaviour
 {
@@ -29,12 +31,8 @@ public class SolanaManager : MonoBehaviour
     [HideInInspector] public PublicKey programId = new("2sJkpmYD97zezCuFRqYtzfRmDF2F2xnhjtcyNm7zqj7q");
     [HideInInspector] public PublicKey goldMint = new("2jGnShhYzmRM4hx1u4y8tCDjk8yshWiaC86EDqvNSNXT");
     [HideInInspector] public PublicKey silverMint = new("9KRLVyUC4ryLoAijiWewHZiVk1Fv1MGoLVEA4rGSFbuM");
-    [HideInInspector] public PublicKey clockworkProgramId = new("CLoCKyJ6DXBJqqu2VWx9RLbgnwwR6BMHHuyasVmfMzBh");
-    [HideInInspector] public string energyClockworkThreadId = "EnergyThread";
     [HideInInspector] public PublicKey userProfilePDA;
     [HideInInspector] public PublicKey VaultPDA;
-    [HideInInspector] public PublicKey ClockworkEnergyThreadAuthorityPDA;
-    [HideInInspector] public PublicKey ClockworkEnergyThreadPDA;
     [HideInInspector] public PlayerAccount player;
     private SpeedrunAnchorClient speedrunClient;
     
@@ -70,17 +68,6 @@ public class SolanaManager : MonoBehaviour
         PublicKey.TryFindProgramAddress(new[]{
             Encoding.UTF8.GetBytes("Vault")
             }, programId, out VaultPDA, out var _);
-
-        PublicKey.TryFindProgramAddress(new[]{
-            Encoding.UTF8.GetBytes("THREAD_AUTHORITY"),
-            Web3.Account.PublicKey,
-            }, programId, out ClockworkEnergyThreadAuthorityPDA, out var _);
-
-        PublicKey.TryFindProgramAddress(new[]{
-            Encoding.UTF8.GetBytes("thread"),
-            ClockworkEnergyThreadAuthorityPDA,
-            Encoding.UTF8.GetBytes(energyClockworkThreadId)
-            }, clockworkProgramId, out ClockworkEnergyThreadPDA, out var _);
 
         SetupSessionWallet();
         
@@ -127,5 +114,31 @@ public class SolanaManager : MonoBehaviour
             var playerData = PlayerAccount.Deserialize(Convert.FromBase64String(result.result.value.data[0]));
             onPlayerAccountChanged?.Invoke(playerData);
         });
+        InvokeRepeating(nameof(AddEnergy), 60, 60);
+    }
+
+    private async void AddEnergy()
+    {
+        if (player.Energy < 130)
+        {
+            var tx = new Transaction()
+            {
+                FeePayer = SolanaManager.Instance.sessionWallet.Account.PublicKey,
+                Instructions = new List<TransactionInstruction>(),
+                RecentBlockHash = await Web3.BlockHash()
+            };
+
+            AddEnergyAccounts energyAccounts = new()
+            {
+                Signer = SolanaManager.Instance.sessionWallet.Account.PublicKey,
+                Player = userProfilePDA,
+                SessionToken = SolanaManager.Instance.sessionWallet.SessionTokenPDA
+            };
+
+            tx.Add(SpeedrunAnchorProgram.AddEnergy(energyAccounts, programId));
+
+            RequestResult<string> res = await SolanaManager.Instance.sessionWallet.SignAndSendTransaction(tx);
+            Debug.Log($"Result: {Newtonsoft.Json.JsonConvert.SerializeObject(res)}");
+        }
     }
 }

@@ -1,13 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::hash::*;
 use anchor_spl::{token::{Transfer, TokenAccount, Token, Mint}, associated_token::AssociatedToken};
-use clockwork_sdk::state::Thread;
-use anchor_lang::InstructionData;
-use anchor_lang::solana_program::{
-    instruction::Instruction,
-    native_token::LAMPORTS_PER_SOL,
-    system_program
-};
 use gpl_session::{SessionError, SessionToken, session_auth_or, Session};
 
 declare_id!("2sJkpmYD97zezCuFRqYtzfRmDF2F2xnhjtcyNm7zqj7q");
@@ -17,14 +10,10 @@ pub mod speedrun_anchor
 {
     use super::*;
 
-    pub fn initialize_player(ctx: Context<InitPlayer>, username: String, thread_id: Vec<u8>) -> Result<()> 
+    pub fn initialize_player(ctx: Context<InitPlayer>, username: String) -> Result<()> 
     {
         let player = &mut ctx.accounts.player;
-        let system_program = &ctx.accounts.system_program;
         let signer = &ctx.accounts.signer;
-        let clockwork_program = &ctx.accounts.clockwork_program;
-        let thread = &ctx.accounts.thread;
-        let thread_authority = &ctx.accounts.thread_authority;
 
         player.username = username;
         player.authority = signer.key();
@@ -36,42 +25,6 @@ pub mod speedrun_anchor
         player.xp = 0;
         player.gold = 0;
         player.silver = 0;
-
-        let target_ix = Instruction {
-            program_id: ID,
-            accounts: crate::accounts::AddEnergy 
-            {
-                signer: signer.key(),
-                player: player.key(),
-                thread: thread.key(),
-                thread_authority: thread_authority.key(),
-            }
-            .to_account_metas(Some(true)),
-            data: crate::instruction::AddEnergy {}.data(),
-        };
-
-        let trigger = clockwork_sdk::state::Trigger::Cron {
-            schedule: "*/1 * * * *".into(),
-            skippable: false,
-        };
-
-        let bump = *ctx.bumps.get("thread_authority").unwrap();
-        clockwork_sdk::cpi::thread_create(
-            CpiContext::new_with_signer(
-                clockwork_program.to_account_info(),
-                clockwork_sdk::cpi::ThreadCreate {
-                    payer: signer.to_account_info(),
-                    system_program: system_program.to_account_info(),
-                    thread: thread.to_account_info(),
-                    authority: thread_authority.to_account_info(),
-                },
-                &[&[b"THREAD_AUTHORITY", signer.key().as_ref(), &[bump]]],
-            ),
-            LAMPORTS_PER_SOL,
-            thread_id,     
-            vec![target_ix.into()],
-            trigger
-        )?;
 
         Ok(())
     }
@@ -104,10 +57,18 @@ pub mod speedrun_anchor
         Ok(())
     }
 
+    #[session_auth_or(ctx.accounts.player.authority.key() == ctx.accounts.signer.key(), GameErrorCode::WrongAuthority)]
     pub fn add_energy(ctx: Context<AddEnergy>) -> Result<()>
     {
         let house_level = ctx.accounts.player.house_lvl;
-        ctx.accounts.player.energy = ctx.accounts.player.energy + house_level;
+        if ctx.accounts.player.energy + house_level > 130 
+        {
+            ctx.accounts.player.energy = 130;
+        }
+        else
+        {
+            ctx.accounts.player.energy = ctx.accounts.player.energy + house_level;
+        }
         Ok(())
     }
 
@@ -218,7 +179,7 @@ pub mod speedrun_anchor
 }
 
 #[derive(Accounts)]
-#[instruction(username: String, thread_id: Vec<u8>)]
+#[instruction(username: String)]
 pub struct InitPlayer<'info>
 {
     #[account(mut)]
@@ -227,17 +188,6 @@ pub struct InitPlayer<'info>
     #[account(init, payer = signer, seeds = [b"PLAYER", signer.key().as_ref()], bump, space = 108 + username.len())]
     pub player: Account<'info, PlayerAccount>,
 
-    #[account(address = clockwork_sdk::ID)]
-    pub clockwork_program: Program<'info, clockwork_sdk::ThreadProgram>,
-
-    /// CHECK: is this the correct account type?
-    #[account(mut, address = Thread::pubkey(thread_authority.key(), thread_id))]
-    pub thread: AccountInfo<'info>,
-
-    #[account(seeds = [b"THREAD_AUTHORITY", signer.key().as_ref()], bump)]
-    pub thread_authority: SystemAccount<'info>,
-
-    #[account(address = system_program::ID)]
     pub system_program: Program<'info, System>
 }
 
@@ -256,20 +206,17 @@ pub struct UpdateLevels<'info>
     pub system_program: Program<'info, System>
 }
 
-#[derive(Accounts)]
+#[derive(Accounts, Session)]
 pub struct AddEnergy<'info>
 {
     #[account(mut)]
     pub signer: Signer<'info>,
-    
+
     #[account(mut, seeds = [b"PLAYER", player.authority.key().as_ref()], bump)]
     pub player: Account<'info, PlayerAccount>,
 
-    #[account(signer, constraint = thread.authority.eq(&thread_authority.key()))]
-    pub thread: Account<'info, Thread>,
-
-    #[account(seeds = [b"ENERGY_THREAD".as_ref()], bump)]
-    pub thread_authority: SystemAccount<'info>,
+    #[session(signer = signer, authority = player.authority.key())]
+    pub session_token: Option<Account<'info, SessionToken>>,
 }
 
 #[derive(Accounts, Session)]

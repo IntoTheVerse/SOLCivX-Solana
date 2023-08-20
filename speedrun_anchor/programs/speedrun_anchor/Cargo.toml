@@ -24,4 +24,3 @@ solana-program = "=1.14.17"
 winnow = "=0.4.1"
 toml_datetime = "=0.6.1"
 gpl-session = { version = "1.0.0", features = ["no-entrypoint"] }
-clockwork-sdk = "2.0.18"

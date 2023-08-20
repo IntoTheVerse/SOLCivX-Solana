@@ -134,9 +134,6 @@ public class Authentication : MonoBehaviour
         InitializePlayerAccounts playerAccounts = new()
         {
             Player = SolanaManager.Instance.userProfilePDA,
-            ClockworkProgram = SolanaManager.Instance.clockworkProgramId,
-            Thread = SolanaManager.Instance.ClockworkEnergyThreadPDA,
-            ThreadAuthority = SolanaManager.Instance.ClockworkEnergyThreadAuthorityPDA,
             Signer = Web3.Account,
             SystemProgram = SystemProgram.ProgramIdKey
         };
@@ -144,7 +141,6 @@ public class Authentication : MonoBehaviour
         TransactionInstruction ixPlayer = SpeedrunAnchorProgram.InitializePlayer(
             playerAccounts, 
             username.text, 
-            Encoding.UTF8.GetBytes(SolanaManager.Instance.energyClockworkThreadId), 
             SolanaManager.Instance.programId
         );
 

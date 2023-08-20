@@ -128,9 +128,9 @@ namespace SpeedrunAnchor
             return res;
         }
 
-        public async Task<RequestResult<string>> SendInitializePlayerAsync(InitializePlayerAccounts accounts, string username, byte[] threadId, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
+        public async Task<RequestResult<string>> SendInitializePlayerAsync(InitializePlayerAccounts accounts, string username, PublicKey feePayer, Func<byte[], PublicKey, byte[]> signingCallback, PublicKey programId)
         {
-            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.SpeedrunAnchorProgram.InitializePlayer(accounts, username, threadId, programId);
+            Solana.Unity.Rpc.Models.TransactionInstruction instr = Program.SpeedrunAnchorProgram.InitializePlayer(accounts, username, programId);
             return await SignAndSendTransaction(instr, feePayer, signingCallback);
         }
 
@@ -208,12 +208,6 @@ namespace SpeedrunAnchor
 
             public PublicKey Player { get; set; }
 
-            public PublicKey ClockworkProgram { get; set; }
-
-            public PublicKey Thread { get; set; }
-
-            public PublicKey ThreadAuthority { get; set; }
-
             public PublicKey SystemProgram { get; set; }
         }
 
@@ -267,9 +261,7 @@ namespace SpeedrunAnchor
 
             public PublicKey Player { get; set; }
 
-            public PublicKey Thread { get; set; }
-
-            public PublicKey ThreadAuthority { get; set; }
+            public PublicKey SessionToken { get; set; }
         }
 
         public class ReduceEnergyAccounts
@@ -381,19 +373,15 @@ namespace SpeedrunAnchor
 
         public static class SpeedrunAnchorProgram
         {
-            public static Solana.Unity.Rpc.Models.TransactionInstruction InitializePlayer(InitializePlayerAccounts accounts, string username, byte[] threadId, PublicKey programId)
+            public static Solana.Unity.Rpc.Models.TransactionInstruction InitializePlayer(InitializePlayerAccounts accounts, string username, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Signer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Player, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ClockworkProgram, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Thread, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ThreadAuthority, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Signer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Player, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(9239203753139697999UL, offset);
                 offset += 8;
                 offset += _data.WriteBorshString(username, offset);
-                _data.WriteS32(threadId.Length, offset);
-                offset += 4;
-                _data.WriteSpan(threadId, offset);
-                offset += threadId.Length;
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
@@ -462,7 +450,7 @@ namespace SpeedrunAnchor
             public static Solana.Unity.Rpc.Models.TransactionInstruction AddEnergy(AddEnergyAccounts accounts, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Signer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Player, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Thread, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ThreadAuthority, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Signer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Player, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken == null ? programId : accounts.SessionToken, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(503249688345018944UL, offset);
