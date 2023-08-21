@@ -159,6 +159,11 @@ namespace SimKit
 
         public void OnTurn(int currentTurn, out float timeToExecute)
         {
+            if (SolanaManager.Instance.player.Energy <= 0) 
+            { 
+                timeToExecute = 0;
+                return;
+            }
             _playerInformation.hasAttackedInTurn = false;
             HandleMovementPath();
             if (_isNewPath) _pathToTravel.RemoveAt(0);

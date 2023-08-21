@@ -25,6 +25,7 @@ public class Authentication : MonoBehaviour
     [SerializeField] private TextMeshProUGUI balanceText;
     [SerializeField] private TextMeshProUGUI sessionBalanceText;
     [SerializeField] private GameObject usernamePanel;
+    [SerializeField] private GameObject copyButton;
     [SerializeField] private Button submitButton;
     [SerializeField] private TMP_InputField username;
     [SerializeField] private TextMeshProUGUI usernameDisplay;
@@ -78,10 +79,16 @@ public class Authentication : MonoBehaviour
         balanceText.text = $"Balance: {await Web3.Instance.WalletBase.GetBalance(commitment: Commitment.Confirmed)}";
         loginButton.gameObject.SetActive(false);
         logoutButton.gameObject.SetActive(true);
+        copyButton.SetActive(true);
         Invoke(nameof(UpdateSessionBalance), 2);
         SolanaManager.Instance.onLoginFinished -= OnLoginFinished;
         SolanaManager.Instance.onPlayerAccountChanged += (account) => TryGetUserProfile(account);
         TryGetUserProfile();
+    }
+
+    public void CopyPublicKey()
+    {
+        Web3.Account.PublicKey.ToString().CopyToClipboard();
     }
 
     private void OnPlay()
@@ -188,5 +195,6 @@ public class Authentication : MonoBehaviour
         balanceText.text = "Balance: Login to see your Sol Balance";
         sessionBalanceText.text = "Session Balance: Login to see your Session Sol Balance";
         usernameDisplay.text = "";
+        copyButton.SetActive(false);
     }
 }
