@@ -55,7 +55,7 @@ public class Authentication : MonoBehaviour
 
     private async void Login()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
         await Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
 #else
         await Web3.Instance.LoginWalletAdapter();

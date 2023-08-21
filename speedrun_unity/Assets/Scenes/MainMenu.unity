@@ -1008,7 +1008,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sessionPassword: iE6(sW2"hE7.nP8!yI0>pU6{rC5@uW5%
-  energyClockworkThreadId: EnergyThread
 --- !u!114 &595554851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1517,8 +1516,8 @@ GameObject:
   m_Component:
   - component: {fileID: 960259251}
   - component: {fileID: 960259250}
-  - component: {fileID: 960259249}
   - component: {fileID: 960259248}
+  - component: {fileID: 960259252}
   m_Layer: 0
   m_Name: SolPlaySocket
   m_TagString: Untagged
@@ -1536,18 +1535,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c686df1024ebb44a5ae8ff9b59323e18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &960259249
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 960259247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbd7daddfbeaa44729a122a269ac8fb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &960259250
@@ -1572,13 +1559,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 960259247}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 955.5841, y: 413.83398, z: 5.146103}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &960259252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 960259247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbd7daddfbeaa44729a122a269ac8fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
