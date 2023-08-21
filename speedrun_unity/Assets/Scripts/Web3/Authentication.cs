@@ -15,6 +15,7 @@ using SpeedrunAnchor;
 using SpeedrunAnchor.Accounts;
 using System.Collections.Generic;
 using Solana.Unity.Programs.Models;
+using System.Threading.Tasks;
 
 public class Authentication : MonoBehaviour
 {
@@ -96,9 +97,12 @@ public class Authentication : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-    public void OnSetupNewAccount()
+    public async Task OnSetupNewAccountAsync()
     {
-        usernamePanel.SetActive(true);
+        RequestResult<string> res = await Web3.Instance.WalletBase.RequestAirdrop();
+        Debug.Log($"Result: {Newtonsoft.Json.JsonConvert.SerializeObject(res)}");
+        if((res.WasHttpRequestSuccessful && res.WasRequestSuccessfullyHandled && res.WasSuccessful) || (await Web3.Instance.WalletBase.GetBalance(commitment: Commitment.Confirmed)) > 0)
+            usernamePanel.SetActive(true);
     }
 
     public async void TryGetUserProfile(PlayerAccount account = null)
@@ -118,7 +122,7 @@ public class Authentication : MonoBehaviour
             {
                 Debug.LogError(e);
             }
-            if (res == null || res.ParsedResult == null) OnSetupNewAccount();
+            if (res == null || res.ParsedResult == null) await OnSetupNewAccountAsync();
             else
             {
                 usernameDisplay.text = res.ParsedResult.Username;
