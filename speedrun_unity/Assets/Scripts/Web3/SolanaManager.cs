@@ -82,7 +82,7 @@ public class SolanaManager : MonoBehaviour
         onLogoutFinished?.Invoke();
     }
 
-    private async void SetupSessionWallet()
+    public async void SetupSessionWallet(bool connectWebSocket = true)
     {
         sessionWallet = await SessionWallet.GetSessionWallet(programId, sessionPassword);
 
@@ -104,7 +104,7 @@ public class SolanaManager : MonoBehaviour
         }
 
         onLoginFinished?.Invoke();
-        ConnectWebSocket();
+        if (connectWebSocket) ConnectWebSocket();
     }
 
     private void ConnectWebSocket()

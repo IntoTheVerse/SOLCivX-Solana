@@ -1,8 +1,6 @@
 using System;
-using System.Text;
 using UnityEngine;
 using Solana.Unity.SDK;
-using Solana.Unity.Wallet;
 using UnityEngine.UI;
 using TMPro;
 using Solana.Unity.Rpc.Types;
@@ -15,7 +13,6 @@ using SpeedrunAnchor;
 using SpeedrunAnchor.Accounts;
 using System.Collections.Generic;
 using Solana.Unity.Programs.Models;
-using System.Threading.Tasks;
 
 public class Authentication : MonoBehaviour
 {
@@ -27,9 +24,11 @@ public class Authentication : MonoBehaviour
     [SerializeField] private TextMeshProUGUI sessionBalanceText;
     [SerializeField] private GameObject usernamePanel;
     [SerializeField] private GameObject copyButton;
+    [SerializeField] private GameObject pleaseReload;
     [SerializeField] private Button submitButton;
     [SerializeField] private TMP_InputField username;
     [SerializeField] private TextMeshProUGUI usernameDisplay;
+    private bool requiresName;
 
     private void OnEnable()
     {
@@ -49,6 +48,11 @@ public class Authentication : MonoBehaviour
         playButton.onClick.AddListener(() => OnPlay());
         submitButton.onClick.AddListener(() => OnSubmit());
         Web3.OnBalanceChange += (double balance) => {
+            if (requiresName)
+            {
+                requiresName = false;
+                SolanaManager.Instance.SetupSessionWallet(false);
+            }
             balanceText.text = $"Balance: {balance}";
         };
 
@@ -58,7 +62,7 @@ public class Authentication : MonoBehaviour
     private async void Login()
     {
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-        await Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
+        await Web3.Instance.LoginWeb3Auth(Provider.GITHUB);
 #else
         await Web3.Instance.LoginWalletAdapter();
 #endif
@@ -97,12 +101,24 @@ public class Authentication : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-    public async Task OnSetupNewAccountAsync()
+    public async void OnSetupNewAccountAsync()
     {
-        RequestResult<string> res = await Web3.Instance.WalletBase.RequestAirdrop();
-        Debug.Log($"Result: {Newtonsoft.Json.JsonConvert.SerializeObject(res)}");
-        if((res.WasHttpRequestSuccessful && res.WasRequestSuccessfullyHandled && res.WasSuccessful) || (await Web3.Instance.WalletBase.GetBalance(commitment: Commitment.Confirmed)) > 0)
+        if ((await Web3.Instance.WalletBase.GetBalance(commitment: Commitment.Confirmed)) > 0)
+        { 
             usernamePanel.SetActive(true);
+        }
+        else
+        {
+            RequestResult<string> res = await Web3.Wallet.RequestAirdrop(100000000);
+            Debug.Log($"Result: {Newtonsoft.Json.JsonConvert.SerializeObject(res)}");
+            if ((res.WasHttpRequestSuccessful && res.WasRequestSuccessfullyHandled && res.WasSuccessful))
+                usernamePanel.SetActive(true);
+            else
+            {
+                requiresName = true;
+                pleaseReload.SetActive(true);
+            }
+        }
     }
 
     public async void TryGetUserProfile(PlayerAccount account = null)
@@ -122,7 +138,7 @@ public class Authentication : MonoBehaviour
             {
                 Debug.LogError(e);
             }
-            if (res == null || res.ParsedResult == null) await OnSetupNewAccountAsync();
+            if (res == null || res.ParsedResult == null) OnSetupNewAccountAsync();
             else
             {
                 usernameDisplay.text = res.ParsedResult.Username;
