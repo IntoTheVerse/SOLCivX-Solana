@@ -230,7 +230,7 @@ namespace SimKit
         private void Attack()
         {
             player.TakeDamage();
-            if(inRange) Invoke(nameof(Attack), 7);
+            if(inRange) Invoke(nameof(Attack), 10);
         }
     }
 

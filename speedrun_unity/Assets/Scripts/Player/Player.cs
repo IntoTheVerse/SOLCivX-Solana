@@ -73,7 +73,7 @@ namespace SimKit
         private bool canAttack;
         private Dictionary<int, int> _armour = new()
         {
-            {1, 8},
+            {1, 7},
             {2, 5},
             {3, 3}
         };
@@ -410,7 +410,7 @@ namespace SimKit
 
         public void TakeDamage()
         {
-            _health -= currentArmourLevel == 0 ? 15 : _armour[currentArmourLevel];
+            _health -= currentArmourLevel == 0 ? 9 : _armour[currentArmourLevel];
             healthSlider.value = _health;
             if (_health <= 0)
             {
