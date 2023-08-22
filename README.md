@@ -15,9 +15,7 @@ You take on the role of a Tribal Chief and attempt to build a civilization in a 
 ### verify our smart contract deployed to solana devnet
 [MMXR4v5L8AtgGeAqQRyz9oCtmQRabQYFZH8bPenGyDE](https://explorer.solana.com/address/MMXR4v5L8AtgGeAqQRyz9oCtmQRabQYFZH8bPenGyDE?cluster=devnet)
 
-  <h6>Built at Solana Speedrun Game Jam & Encode Solana Summer Hackathon by Prasanta B. and Elio Lopes</h6>
-  <img width="341" alt="image" src="https://github.com/memxor/Solana_Speedrun_SolCivX/assets/43913734/7940d93f-a99d-4923-a286-e0db593804b5">
-  <img width="341" alt="image" src="https://github.com/memxor/Solana_Speedrun_SolCivX/assets/43913734/e8f2aaa2-45d6-42a8-bbc8-f8ed8c4d0a28">
+  <h6>Built at OPOS by Prasanta B. and Elio Lopes</h6>
   
 </p>
   <p>View the project demo on <a href="https://youtu.be/IEfSIgAxVZg">YouTube</a></p>
