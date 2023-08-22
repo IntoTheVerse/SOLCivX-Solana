@@ -18,7 +18,7 @@ You take on the role of a Tribal Chief and attempt to build a civilization in a 
   <h6>Built at OPOS by Prasanta B. and Elio Lopes</h6>
   
 </p>
-  <p>View the project demo on <a href="https://youtu.be/IEfSIgAxVZg">YouTube</a></p>
+  <p>View the project demo on <a href="https://youtu.be/7gaE8JLaZl4">YouTube</a></p>
 </p>
 
 ### Built on Solana with
